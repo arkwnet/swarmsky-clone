@@ -10,9 +10,9 @@ if (isset($checkin["response"]["checkin"]["shares"]["twitter"])) {
     $output = "";
     // スポット名
     $venue_name = "";
-    if (false !== strpos($checkin["response"]["checkin"]["venue"]["name"], "(") && false !== strpos($checkin["response"]["checkin"]["venue"]["name"], ")")) {
+    if (strpos($checkin["response"]["checkin"]["venue"]["name"], "(") !== false && strpos($checkin["response"]["checkin"]["venue"]["name"], ")") !== false) {
       $venue_name_split = explode("(", $checkin["response"]["checkin"]["venue"]["name"]);
-      if (preg_match("/[ぁ-ん]+|[ァ-ヴー]+|[一-龠]/u", $venue_name_split[0])) {
+      if (preg_match("/[ぁ-ん]+|[ァ-ヴー]+|[一-龠]/u", $venue_name_split[0]) || preg_match("/[0-9]/", $venue_name_split[1])) {
         $venue_name = $checkin["response"]["checkin"]["venue"]["name"];
       } else {
         preg_match("{\((.*)\)}", $checkin["response"]["checkin"]["venue"]["name"], $venue_name_match);
@@ -23,7 +23,7 @@ if (isset($checkin["response"]["checkin"]["shares"]["twitter"])) {
     }
     // スポットの自治体
     $venue_place = "";
-    if (isset($checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1])) {
+    if (isset($checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1]) && strpos($checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1], "-") === false) {
       $venue_place = $checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1];
     } else {
       $venue_place = $checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][0];
