@@ -23,6 +23,27 @@ if (isset($checkin["response"]["checkin"]["shares"]["twitter"])) {
     } else {
       $venue_place = $venue_region;
     }
+    // バックアップシステム
+    if (empty($venue_name) || empty($venue_place)) {
+      // スポット名
+      if (strpos($checkin["response"]["checkin"]["venue"]["name"], "(") !== false && strpos($checkin["response"]["checkin"]["venue"]["name"], ")") !== false) {
+        $venue_name_split = explode("(", $checkin["response"]["checkin"]["venue"]["name"]);
+        if (preg_match("/[ぁ-ん]+|[ァ-ヴー]+|[一-龠]/u", $venue_name_split[0]) || preg_match("/[0-9]/", $venue_name_split[1])) {
+          $venue_name = $checkin["response"]["checkin"]["venue"]["name"];
+        } else {
+          preg_match("{\((.*)\)}", $checkin["response"]["checkin"]["venue"]["name"], $venue_name_match);
+          $venue_name = $venue_name_match[1];
+        }
+      } else {
+        $venue_name = $checkin["response"]["checkin"]["venue"]["name"];
+      }
+      // スポットの自治体
+      if (isset($checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1]) && strpos($checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1], "-") === false) {
+        $venue_place = $checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][1];
+      } else {
+        $venue_place = $checkin["response"]["checkin"]["venue"]["location"]["formattedAddress"][0];
+      }
+    }
     // 投稿文生成
     if (isset($checkin["response"]["checkin"]["shout"])) {
       $output = $checkin["response"]["checkin"]["shout"] . " (@ " . $venue_name . " in " . $venue_place . ") [swarmapp](" . $checkin["response"]["checkin"]["checkinShortUrl"] . ")";
