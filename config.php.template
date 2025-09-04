@@ -1,4 +1,7 @@
 <?php
-$FOURSQUARE_ACCESS_TOKEN = "Foursquare Access Token";
 $MISSKEY_HOST = "Misskey Host Name (ex: misskey.io)";
 $MISSKEY_API_TOKEN = "Misskey API Token";
+
+$DENY_LIST = [
+  "",
+];
