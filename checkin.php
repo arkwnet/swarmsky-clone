@@ -4,6 +4,7 @@ if (isset($_POST["checkin"]) == false) {
   exit();
 }
 $push = json_decode($_POST["checkin"], true);
+$checkin = json_decode(file_get_contents("https://api.foursquare.com/v2/checkins/" . $push["id"] . "?oauth_token=" . $FOURSQUARE_ACCESS_TOKEN . "&v=20231010"), true);
 // スポット名と拒否リストを照合
 $venue_name = $push["venue"]["name"];
 for ($i = 0; $i < count($DENY_LIST); $i++) {
@@ -20,8 +21,12 @@ if ($venue_city != "") {
 } else {
   $venue_place = $venue_state;
 }
-// 共有URL (暫定)
-$url = "https://app.foursquare.com/share/checkin/" . $push["id"] . "?s=" . $push["id"] . "&lang=ja";
+// 共有URL
+if (isset($checkin["response"]["checkin"]["checkinShortUrl"])) {
+  $url = $checkin["response"]["checkin"]["checkinShortUrl"];
+} else {
+  $url = "https://app.foursquare.com/share/checkin/" . $push["id"] . "?s=" . $push["id"] . "&lang=ja";
+}
 // 投稿文生成
 if (isset($push["shout"])) {
   $output = $push["shout"] . " (@ " . $venue_name . " in " . $venue_place . ") [swarmapp](" . $url . ")";
